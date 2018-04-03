@@ -1,0 +1,73 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  become: no
+  tasks: 
+    - name: Add brew repository
+      shell: 'brew tap {{item}}'
+      ignore_errors: true
+      with_items:
+        - "caskroom/cask"
+        - "caskroom/versions"
+        - "caskroom/homebrew-cask"
+
+    - name: install homebrew cask
+      command: brew install caskroom/cask/brew-cask
+
+    - name: Install development tools
+      shell: 'brew install {{item.name}} {{item.option}}'
+      ignore_errors: true
+      with_items:
+        - {name: rbenv, option: ''}
+        - {name: ruby-build, option: ''}
+        - {name: vim, option: '--with-override-system-vi'}
+        - {name: tmux, option: ''}
+        - {name: reattach-to-user-namespace, option: ''}
+        - {name: tig, option: ''}
+
+    - name: install ruby version 2.2 and 2.3
+      shell: rbenv install {{item.version}}
+      with_items:
+        - {version: 2.3.4}
+        - {version: 2.2.7}
+
+    - name: Install homebrew casks
+      shell: 'brew cask install {{item}}'
+      ignore_errors: true
+      with_items:
+        - alfred
+        - atom
+        - chromium
+        - coteditor
+        - dash
+        - firefoxdeveloperedition
+        - google-chrome
+        - google-japanese-ime
+        - java
+        - karabiner
+        - sequel-pro
+        - virtualbox
+        - vagrant
+
+    - name: install apm packages
+      shell: 'apm install {{item}}'
+      with_items:
+        - atom-ide-ui
+        - atom-beautify
+        - dracula-ui
+        - japanese-menu
+        - vim-mode-plus
+        - vim-mode-visual-block
+
+    - name: install pip and awscli
+      become: yes
+      shell: 'easy_install {{item}}'
+      with_items:
+        - pip
+        - awscli
+
+    - name: install dein vim
+      shell: |
+        curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh
+        sh ./installer.sh ~/
