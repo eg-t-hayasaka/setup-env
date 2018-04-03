@@ -3,6 +3,10 @@
   connection: local
   gather_facts: no
   become: no
+  handlers:
+    - name: rehash rbenv
+      shell: rbenv rehash
+
   tasks: 
     - name: Add brew repository
       shell: 'brew tap {{item}}'
@@ -19,18 +23,33 @@
       shell: 'brew install {{item.name}} {{item.option}}'
       ignore_errors: true
       with_items:
+        - {name: git, option: ''}
         - {name: rbenv, option: ''}
         - {name: ruby-build, option: ''}
         - {name: vim, option: '--with-override-system-vi'}
         - {name: tmux, option: ''}
         - {name: reattach-to-user-namespace, option: ''}
         - {name: tig, option: ''}
+        - {name: 'postgresql@9.6', option: ''}
+        - {name: 'redis', option: ''}
 
-    - name: install ruby version 2.2 and 2.3
-      shell: rbenv install {{item.version}}
-      with_items:
-        - {version: 2.3.4}
-        - {version: 2.2.7}
+    - name: check ruby version 2.3
+      register: exists_ruby23
+      shell: rbenv versions --bare | grep 2.3
+
+    - name: install newest ruby version 2.3
+      shell: rbenv install $(rbenv install -l | grep -v - | grep 2.3 | tail -1)
+      notify: rehash rbenv
+      when: exists_ruby23.stdout == ''
+
+    - name: check ruby version 2.4
+      register: exists_ruby24
+      shell: rbenv versions --bare | grep 2.4
+
+    - name: install newest ruby version 2.4
+      shell: rbenv install $(rbenv install -l | grep -v - | grep 2.4 | tail -1)
+      notify: rehash rbenv
+      when: exists_ruby24.stdout == ''
 
     - name: Install homebrew casks
       shell: 'brew cask install {{item}}'
@@ -41,7 +60,8 @@
         - chromium
         - coteditor
         - dash
-        - firefoxdeveloperedition
+        - docker
+        - firefox-developer-edition
         - google-chrome
         - google-japanese-ime
         - java
@@ -71,3 +91,4 @@
       shell: |
         curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh
         sh ./installer.sh ~/
+
