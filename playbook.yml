@@ -26,11 +26,12 @@
         - {name: git, option: ''}
         - {name: rbenv, option: ''}
         - {name: ruby-build, option: ''}
-        - {name: vim, option: '--with-override-system-vi'}
+        - {name: vim, option: '--with-override-system-vi --with-lua'}
         - {name: tmux, option: ''}
         - {name: reattach-to-user-namespace, option: ''}
         - {name: tig, option: ''}
         - {name: 'postgresql@9.6', option: ''}
+        - {name: 'postgresql', option: ''}
         - {name: 'redis', option: ''}
 
     - name: check ruby version 2.3
