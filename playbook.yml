@@ -23,6 +23,7 @@
       shell: 'brew install {{item.name}} {{item.option}}'
       ignore_errors: true
       with_items:
+        - {name: 'awscli', option: ''}
         - {name: git, option: ''}
         - {name: rbenv, option: ''}
         - {name: ruby-build, option: ''}
@@ -80,13 +81,6 @@
         - japanese-menu
         - vim-mode-plus
         - vim-mode-visual-block
-
-    - name: install pip and awscli
-      become: yes
-      shell: 'easy_install {{item}}'
-      with_items:
-        - pip
-        - awscli
 
     - name: install dein vim
       shell: |
