@@ -6,6 +6,11 @@
   handlers:
     - name: rehash rbenv
       shell: rbenv rehash
+    - name: setup puma-dev
+      gather_facts: yes
+      shell: puma-dev -setup
+    - name: install dein vim
+      shell: ./installer.sh ~/
 
   tasks: 
     - name: Add brew repository
@@ -35,8 +40,17 @@
         - {name: 'postgresql', option: ''}
         - {name: 'redis', option: ''}
 
+    - name: install puma-dev application server
+      shell: 'brew install puma/puma/puma-dev'
+      notify: setup puma-dev
+
+    - name: install puma-dev
+      ignore_errors: true
+      shell: puma-dev -install
+
     - name: check ruby version 2.3
       register: exists_ruby23
+      ignore_errors: true
       shell: rbenv versions --bare | grep 2.3
 
     - name: install newest ruby version 2.3
@@ -46,6 +60,7 @@
 
     - name: check ruby version 2.4
       register: exists_ruby24
+      ignore_errors: true
       shell: rbenv versions --bare | grep 2.4
 
     - name: install newest ruby version 2.4
@@ -83,7 +98,8 @@
         - vim-mode-visual-block
 
     - name: install dein vim
-      shell: |
-        curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh
-        sh ./installer.sh ~/
-
+      get_url:
+        url: https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh
+        dest: installer.sh
+        mode: 0755
+      notify: install dein vim
