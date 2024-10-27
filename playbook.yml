@@ -6,11 +6,27 @@
   handlers:
     - name: rehash rbenv
       shell: rbenv rehash
-    - name: setup puma-dev
-      gather_facts: yes
-      shell: puma-dev -setup
-    - name: install dein vim
-      shell: ./installer.sh ~/
+    - name: install vscode extensions
+      shell: 'code --install-extension {{ item }}'
+      with=items:
+        - 'Dart-Code.flutter'
+        - 'ms-vsliveshare.vsliveshare'
+        - 'vscjava.vscode-maven'
+        - 'vscodevim.vim'
+        - 'shopify.ruby-extensions-pack'
+        - 'shopify.ruby-lsp'
+        - 'misogi.ruby-rubocop'
+        - 'oderwat.indent-rainbow'
+        - 'avetis.tokyo-night'
+        - 'pkief.material-icon-theme'
+        - 'dracula-theme.theme-dracula'
+        - 'esbenp.prettier-vscode'
+        - 'eamodio.gitlens'
+        - 'vscjava.vscode-gradle'
+        - 'ms-ceintl.vscode-language-pack-ja'
+        - 'aaron-bond.better-comments'
+        - 'gruntfuggly.todo-tree'
+
 
   tasks: 
     - name: Add brew repository
@@ -21,85 +37,45 @@
         - "caskroom/versions"
         - "caskroom/homebrew-cask"
 
-    - name: install homebrew cask
-      command: brew install caskroom/cask/brew-cask
-
     - name: Install development tools
       shell: 'brew install {{item.name}} {{item.option}}'
       ignore_errors: true
       with_items:
-        - {name: 'awscli', option: ''}
+        - {name: awscli, option: ''}
         - {name: git, option: ''}
         - {name: rbenv, option: ''}
         - {name: ruby-build, option: ''}
-        - {name: vim, option: '--with-override-system-vi --with-lua'}
+        - {name: nvim, option: ''}
         - {name: tmux, option: ''}
         - {name: reattach-to-user-namespace, option: ''}
         - {name: tig, option: ''}
-        - {name: 'postgresql@9.6', option: ''}
-        - {name: 'postgresql', option: ''}
-        - {name: 'redis', option: ''}
+        - {name: postgresql@9.6, option: ''}
+        - {name: postgresql, option: ''}
+        - {name: redis, option: ''}
 
-    - name: install puma-dev application server
-      shell: 'brew install puma/puma/puma-dev'
-      notify: setup puma-dev
-
-    - name: install puma-dev
+    - name: check ruby version 3
+      register: exists_ruby3
       ignore_errors: true
-      shell: puma-dev -install
+      shell: rbenv versions --bare | grep 3.3.5
 
-    - name: check ruby version 2.3
-      register: exists_ruby23
-      ignore_errors: true
-      shell: rbenv versions --bare | grep 2.3
-
-    - name: install newest ruby version 2.3
-      shell: rbenv install $(rbenv install -l | grep -v - | grep 2.3 | tail -1)
+    - name: install newest ruby version 3
+      shell: rbenv install $(rbenv install -l | grep -v - | grep 3.3.5 | tail -1)
       notify: rehash rbenv
-      when: exists_ruby23.stdout == ''
-
-    - name: check ruby version 2.4
-      register: exists_ruby24
-      ignore_errors: true
-      shell: rbenv versions --bare | grep 2.4
-
-    - name: install newest ruby version 2.4
-      shell: rbenv install $(rbenv install -l | grep -v - | grep 2.4 | tail -1)
-      notify: rehash rbenv
-      when: exists_ruby24.stdout == ''
+      when: exists_ruby3.stdout == ''
 
     - name: Install homebrew casks
-      shell: 'brew cask install {{item}}'
+      shell: 'brew install -cask {{item}}'
       ignore_errors: true
       with_items:
         - alfred
-        - atom
-        - chromium
         - coteditor
-        - dash
-        - docker
-        - firefox-developer-edition
-        - google-chrome
         - google-japanese-ime
         - java
-        - karabiner
+        - karabiner-elements
         - sequel-pro
         - virtualbox
         - vagrant
 
-    - name: install apm packages
-      shell: 'apm install {{item}}'
-      with_items:
-        - atom-ide-ui
-        - atom-beautify
-        - dracula-ui
-        - japanese-menu
-        - vim-mode-plus
-        - vim-mode-visual-block
-
-    - name: install dein vim
-      get_url:
-        url: https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh
-        dest: installer.sh
-        mode: 0755
-      notify: install dein vim
+    - name: install vscode
+      shell: 'brew install --cask visual-studio-code'
+      notify: install vscode extensions

@@ -5,6 +5,9 @@ brew_path=`which brew`
 if [ "x$brew_path" = 'x' ]; then
     echo "Install Homebrew."
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+    
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
 else
     echo "Homebrew already installed."
 fi
