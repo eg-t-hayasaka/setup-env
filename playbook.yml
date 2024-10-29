@@ -75,6 +75,10 @@
         - sequel-pro
         - virtualbox
         - vagrant
+        - android-studio
+        - slack
+        - microsoft-teams
+        - zoom
 
     - name: install vscode
       shell: 'brew install --cask visual-studio-code'
