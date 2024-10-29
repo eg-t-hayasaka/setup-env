@@ -36,6 +36,7 @@
         - "caskroom/cask"
         - "caskroom/versions"
         - "caskroom/homebrew-cask"
+        - "leoafarias/fvm"
 
     - name: Install development tools
       shell: 'brew install {{item.name}} {{item.option}}'
@@ -52,6 +53,7 @@
         - {name: postgresql@9.6, option: ''}
         - {name: postgresql, option: ''}
         - {name: redis, option: ''}
+        - {name: fvm, option: ''}
 
     - name: check ruby version 3
       register: exists_ruby3
